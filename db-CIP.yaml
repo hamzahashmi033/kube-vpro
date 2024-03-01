@@ -9,3 +9,4 @@ spec:
       protocol: TCP
   selector:
     app: vprodb # only pod with a label of vprodb should access this service
+  type: ClusterIP # service type will be cluster ip
