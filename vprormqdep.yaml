@@ -1,0 +1,30 @@
+  apiVersion: apps/v1
+  kind: Deployment 
+  metadata:
+    name: vprormq # name of the POD
+    labels: 
+      app: vprormq  
+  spec:
+    selector: # only apply on POD which has label vpromc
+      matchLabels: 
+        app: vprormq
+    replicas: 1
+    template: # POD metadata with label vpromc
+      metadata:
+        labels:
+          app: vprormq
+      spec:
+        containers: # container configuration
+          - name: vprormq 
+            image: rabbitmq
+            ports:
+              - name:  vprormq-port
+                containerPort: 15672
+            env:
+             - name: RABBITMQ_DEFAULT_PASS
+               valueFrom:
+                 secretKeyRef:
+                   name: app-secret
+                   key: rmq-pass
+             - name: RABBITMQ_DEFAULT_USER
+               value: "guest"
