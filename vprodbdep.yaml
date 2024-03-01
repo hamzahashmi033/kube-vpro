@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment # Deployment object will create a POD in which our container lives
+metadata:
+  name: vprodb
+  labels:
+    app: vprodb
+spec:
+  selector:
+    matchLabels:
+      app: vprodb # If any container has a label vprodb then apply this deployment file on that  
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vprodb # container has a label as vprodb
+    spec:
+      containers:
+        - name: vprodb
+          image: hamzahashmi0333/vprofiledb
+          volumeMounts:
+            - mountPath: /var/lib/mysql # volume of EBS will mount on this container on path /var/lib/mysql
+              name: vpro-db-data # Name of the volume which mount on that particular container
+          ports:
+            - name: vprodb-port
+              containerPort: 3306
+          env: # Mysql image will need a admin password to run, So we are injecting encoded password from the app-secret.yaml
+            - name: MYSQL_ROOT_PASSWORD  # Name of the variable 
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret # reference of the file
+                  key: db-pass # key which contain password 
+      nodeSelector: # select a worker node which has a label zone = us-east-1a and run this POD on it 
+          zone: us-east-1a
+      volumes: # EBS volume configuration which will mount on the POD
+        - name: vpro-db-data # name of the volume
+          awsElasticBlockStore: # type of the volume
+            volumeID: vol-0306995201e223ba5 # volume ID of your EBS volume
+            fsType: ext4 # file system type it will format the volume with extension 4(ext4)
+      initContainers: # init containers are short lived containers, they start do a small task and died
+        - name: busybox # name of the container 
+          image: busybox:latest # name of the image on which container live 
+          args: ["rm","-rf","/var/lib/mysql/lost+found"] # the container will do a small task like remove /var/lib/mysql/lost+found. Directory generate because of ext4 which created lost+found directory and mysql image does not start if any thing present in /var/lib/mysql
+          volumeMounts: # we mount the voulume on this container first and then mount it on main container
+            - name: vpro-db-data # name of the volume
+              mountPath: /var/lib/mysql # path where volume will mount in thi container 
+
+         
