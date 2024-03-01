@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service 
+metadata:
+  name: vpromc-svc # name of the service 
+spec:
+  ports:
+    - port: 11211 # port on which this service target and forward the request on container pod
+      targetPort: vpromc-port # name of the container port which contain port value
+      protocol: TCP
+  selector:
+    app: vpromc # only pod with a label of vprodb should access this service
+  type: ClusterIP # service type will be cluster ip
