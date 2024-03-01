@@ -21,7 +21,7 @@ spec:
             - mountPath: /var/lib/mysql # volume of EBS will mount on this container on path /var/lib/mysql
               name: vpro-db-data # Name of the volume which mount on that particular container
           ports:
-            - name: vprodb-port
+            - name: vprodb-port # name of the port
               containerPort: 3306
           env: # Mysql image will need a admin password to run, So we are injecting encoded password from the app-secret.yaml
             - name: MYSQL_ROOT_PASSWORD  # Name of the variable 
