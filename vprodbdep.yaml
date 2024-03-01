@@ -7,12 +7,12 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: vprodb # If any container has a label vprodb then apply this deployment file on that  
+      app: vprodb # If any POD has a label vprodb then apply this deployment file on that  
   replicas: 1
   template:
     metadata:
       labels:
-        app: vprodb # container has a label as vprodb
+        app: vprodb # POD has a label as vprodb
     spec:
       containers:
         - name: vprodb
